@@ -13,7 +13,7 @@ ReactDOM.render(
     <Switch>
       <Route path="/" component={Home} exact />
       <Route path="/cadastro/video/:videoId?" component={RegisterVideo} />
-      <Route path="/cadastro/categoria" component={RegisterCategory} />
+      <Route path="/cadastro/categoria/:categoryId?" component={RegisterCategory} />
       <Route path="/category/:categoryId" component={ManageVideos} />
       <Route component={() => <h1>404: Página não encontrada</h1>} />
     </Switch>
