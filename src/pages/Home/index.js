@@ -25,7 +25,7 @@ function Home() {
   }
 
   return (
-    <TemplatePage buttonText="Novo vídeo" buttonPath="/cadastro/video">
+    <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
       {playVideo.length > 0 && (
         <EmbedIframe
           title="Titulo do Iframe"
@@ -50,7 +50,6 @@ function Home() {
       />
 
       {categoriesData && categoriesData.slice(1).map(category => {
-        if (!category.videos.length) return
         return (
           <Carousel
             key={category.id}
