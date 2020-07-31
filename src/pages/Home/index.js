@@ -25,7 +25,7 @@ function Home() {
   }
 
   return (
-    <TemplatePage buttonText="Novo vídeo" buttonPath="/cadastro/video">
+    <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
       {playVideo.length > 0 && (
         <EmbedIframe
           title="Titulo do Iframe"
@@ -49,13 +49,15 @@ function Home() {
         category={categoriesData[0]}
       />
 
-      {categoriesData && categoriesData.slice(1).map(category => (
-        <Carousel
-          key={category.id}
-          setPlayVideo={setPlayVideo}
-          category={category}
-        />
-      ))}
+      {categoriesData && categoriesData.slice(1).map(category => {
+        return (
+          <Carousel
+            key={category.id}
+            setPlayVideo={setPlayVideo}
+            category={category}
+          />
+        )
+      })}
 
     </TemplatePage>
   );

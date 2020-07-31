@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const SubmitBtn = styled.button`
+export const PrimaryBtn = styled.button`
   cursor: pointer;
   margin-bottom: 40px;
   color: var(--white);

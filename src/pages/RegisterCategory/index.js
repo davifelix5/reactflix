@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import TemplatePage from "../../components/TemplatePage";
-import { TableElement } from "./styles";
 import Form from "../../components/Form";
 import InputField from "../../components/FormFields/InputField";
-import SubmitButton from "../../components/FormFields/SubmitButton";
 import Loader from '../../components/Loader'
+import { useParams, useHistory } from 'react-router-dom';
+import PrimaryButton from '../../components/PrimaryButton'
+import SecondaryButton from '../../components/SecondaryButton'
+import { ButtonContainer } from './styles'
 
 function RegisterCategory() {
   const initialValues = {
@@ -17,6 +19,8 @@ function RegisterCategory() {
   const [category, setCategory] = useState(initialValues);
   const [editingCategory, setEditingCategory] = useState(null);
   const [action, setAction] = useState("Cadastrar");
+  const { categoryId } = useParams()
+  const history = useHistory()
 
   useEffect(() => {
     if (editingCategory) setAction("Editar");
@@ -37,7 +41,11 @@ function RegisterCategory() {
     const newCategories = categories.filter(cat => cat !== editingCategory);
     fetch(URL, { method: METHOD, body: JSON.stringify({ ...category }), headers: { "Content-Type": "application/json" } })
       .then(res => res.json())
-      .then(data => console.log(data))
+      .then(() => {
+        alert('Categoria cadastrado com sucesso')
+        history.push('/')
+      })
+      .catch(() => alert('Ocorreu um erro'))
     setCategories([...newCategories, category]);
     setCategory(initialValues);
     setEditingCategory(null);
@@ -48,13 +56,19 @@ function RegisterCategory() {
     setEditingCategory(category);
   }
 
-  function handleRemove(category) {
-    if (window.confirm("Certeza que deseja deletar?")) {
-      setCategories(categories.filter(cat => cat !== category));
-      const URL = `http://localhost:8080/categories/${category.id}`
-      const METHOD = "DELETE"
-      fetch(URL, { method: METHOD })
-    }
+  useEffect(() => {
+    if (!categoryId) return
+    const URL = `http://localhost:8080/categories/${categoryId}`
+    fetch(URL)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        handleEdit({ ...data })
+      })
+  }, [categoryId])
+
+  if (categoryId && !editingCategory) {
+    return <TemplatePage><Loader /></TemplatePage>
   }
 
   function changeCategory(e) {
@@ -63,7 +77,7 @@ function RegisterCategory() {
   }
 
   return (
-    <TemplatePage buttonText="Novo vídeo" buttonPath="/cadastro/video">
+    <TemplatePage>
       <h1>Cadastro de categoria</h1>
       <Form onSubmit={handleSubmit}>
         <InputField
@@ -92,44 +106,11 @@ function RegisterCategory() {
           onChange={changeCategory}
           autoComplete="off"
         />
-        <SubmitButton type="submit">{action}</SubmitButton>
+        <ButtonContainer>
+          {editingCategory && <SecondaryButton onClick={() => history.push('/dashboard')}>Cancelar</SecondaryButton>}
+          <PrimaryButton type="submit">{action}</PrimaryButton>
+        </ButtonContainer>
       </Form>
-      {categories.length > 0 ? (
-        <TableElement>
-          <thead>
-            <tr>
-              <TableElement.Data as="th">Nome</TableElement.Data >
-              <TableElement.Data as="th" hideOnMobile>Descrição</TableElement.Data >
-              <TableElement.Data as="th" isAction>Editar</TableElement.Data >
-              <TableElement.Data as="th" isAction>Remover</TableElement.Data >
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map(category => {
-              return (
-                <tr key={category.id}>
-                  <TableElement.Data>{category.name}</TableElement.Data>
-                  <TableElement.Data hideOnMobile>{category.description}</TableElement.Data>
-                  <TableElement.Data
-                    isAction
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleEdit(category)}
-                  >
-                    Editar
-                  </TableElement.Data>
-                  <TableElement.Data
-                    isAction
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleRemove(category)}
-                  >
-                    Remover
-                  </TableElement.Data>
-                </tr>
-              );
-            })}
-          </tbody>
-        </TableElement>
-      ) : <Loader />}
     </TemplatePage>
   );
 }
