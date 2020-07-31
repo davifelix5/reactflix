@@ -4,6 +4,8 @@ import Loader from '../../components/Loader';
 import { useParams } from 'react-router-dom';
 import { VideoList, VideoElement, Button } from './styles';
 import { Link } from 'react-router-dom'
+import categoriesApi from '../../repositiories/categories'
+import videosApi from '../../repositiories/videos'
 
 function getYouTubeId(youtubeURL) {
     return youtubeURL.replace(
@@ -23,40 +25,42 @@ function ManageVideos() {
     const [videos, setVideos] = useState([])
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const URL = `http://localhost:8080/categories/${categoryId}`
-        fetch(URL)
-            .then(res => {
-                if (res.status === 404) setCategoryNotFound(true)
-                else return res.json()
-            })
+        categoriesApi.getCategory(categoryId)
             .then(data => {
                 setCategory(data)
             })
+            .catch(() => setCategoryNotFound(true))
     }, [categoryId])
 
     useEffect(() => {
-        const URL = `http://localhost:8080/categories/${categoryId}/videos`
-        fetch(URL)
-            .then(res => res.json())
+        videosApi.getVideosByCategory(categoryId)
             .then(data => {
-                data.length > 0 ? setVideos(data) : setVideosNotFound(true)
+                if (data.length > 0) setVideos(data)
+                else setVideosNotFound(true)
             })
     }, [categoryId])
 
     function handleDelete(videoId) {
         if (!window.confirm('Tem certeza que deseja deltar esse vídeo?')) return
-        const URL = `http://localhost:8080/videos/${videoId}`
-        const method = "DELETE"
         setVideos(videos.filter(video => video.id !== videoId))
-        fetch(URL, { method })
+        videosApi.deleteVideo(videoId)
             .then(() => {
                 alert('Video deletado com sucesso')
             })
             .catch(() => {
                 alert('Houve um erro. Tente novamente')
             })
+    }
+
+    if (categoryNotFound) {
+        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
+    }
+
+    if (videosNotFound) {
+        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 
     if (!videos.length) {
@@ -66,13 +70,6 @@ function ManageVideos() {
             </TemplatePage>
         )
     }
-
-    if (categoryNotFound) {
-        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
-    } else if (videosNotFound || (!categoryNotFound && !videos.length)) {
-        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
-    }
-
 
     return (
         <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">

@@ -7,6 +7,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { ButtonContainer } from './styles'
+import categoriesApi from '../../repositiories/categories'
 
 function RegisterCategory() {
   const initialValues = {
@@ -15,7 +16,6 @@ function RegisterCategory() {
     color: "#000"
   };
 
-  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(initialValues);
   const [editingCategory, setEditingCategory] = useState(null);
   const [action, setAction] = useState("Cadastrar");
@@ -27,28 +27,18 @@ function RegisterCategory() {
     else setAction("Cadastrar");
   }, [editingCategory, setAction]);
 
-  useEffect(() => {
-    const URL = "http://localhost:8080/categories/"
-    fetch(URL)
-      .then(res => res.json())
-      .then(data => setCategories([...data]));
-  }, []);
 
   function handleSubmit(event) {
     event.preventDefault();
-    const URL = editingCategory ? `http://localhost:8080/categories/${editingCategory.id}` : "http://localhost:8080/categories/"
-    const METHOD = editingCategory ? "PUT" : "POST"
-    const newCategories = categories.filter(cat => cat !== editingCategory);
-    fetch(URL, { method: METHOD, body: JSON.stringify({ ...category }), headers: { "Content-Type": "application/json" } })
-      .then(res => res.json())
+    const operation = editingCategory ? categoriesApi.editCategory : categoriesApi.registerCategory
+    const destination = editingCategory ? "/dashboard" : "/"
+    operation({ ...category })
       .then(() => {
-        alert('Categoria cadastrado com sucesso')
-        history.push('/')
+        alert('Operação feita com sucesso')
+        history.push(destination)
+        setCategory(initialValues);
       })
       .catch(() => alert('Ocorreu um erro'))
-    setCategories([...newCategories, category]);
-    setCategory(initialValues);
-    setEditingCategory(null);
   }
 
   function handleEdit(category) {
@@ -58,9 +48,7 @@ function RegisterCategory() {
 
   useEffect(() => {
     if (!categoryId) return
-    const URL = `http://localhost:8080/categories/${categoryId}`
-    fetch(URL)
-      .then(res => res.json())
+    categoriesApi.getCategory(categoryId)
       .then(data => {
         console.log(data)
         handleEdit({ ...data })

@@ -8,6 +8,8 @@ import Loader from '../../components/Loader';
 import { ButtonContainer } from './styles'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
+import videosApi from '../../repositiories/videos'
+import categoriesApi from '../../repositiories/categories'
 
 function RegisterVideo() {
   const initialValues = {
@@ -23,9 +25,7 @@ function RegisterVideo() {
   const history = useHistory()
 
   useEffect(() => {
-    const URL = "http://localhost:8080/categories"
-    fetch(URL)
-      .then(res => res.json())
+    categoriesApi.getCategories()
       .then(data => setCategoryOptions([...data]))
   }, [])
 
@@ -36,32 +36,31 @@ function RegisterVideo() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const URL = editing ? `http://localhost:8080/videos/${videoId}` : "http://localhost:8080/videos";
-    const method = editing ? "PUT" : "POST";
-    const body = JSON.stringify({ ...video, categoryId: Number(video.categoryId) });
-    const headers = { "Content-Type": "application/json" };
-    const destination = editing ? `/category/${video.categoryId}` : "/";
-    fetch(URL, { method, body, headers })
-      .then(res => res.json())
+    const operation = editing ? videosApi.editVideo : videosApi.registerVideo
+    const destination = editing ? `/category/${video.categoryId}` : '/'
+    operation({ ...video, categoryId: Number(video.categoryId) })
       .then(() => {
         alert('Operação feita com sucesso!')
         setVideo(initialValues);
         setEditing(false)
         history.push(destination)
       })
-      .catch(() => alert('Ocorreu um erro, tente novamente!'));
-    setVideo(initialValues);
+      .catch(() => {
+        alert('Ocorreu um erro, tente novamente!')
+        setVideo(initialValues);
+      });
+  }
+
+  function handleEdit(video) {
+    setEditing(true)
+    setVideo({ ...video })
   }
 
   useEffect(() => {
     if (!videoId) return
-    setEditing(true)
-    const URL = `http://localhost:8080/videos/${videoId}`
-    fetch(URL)
-      .then(res => res.json())
+    videosApi.getVideo(videoId)
       .then(data => {
-        const { title, url, description, categoryId } = data
-        setVideo({ title, url, description, categoryId })
+        handleEdit(data)
       })
   }, [videoId])
 
