@@ -86,6 +86,7 @@ function RegisterVideo() {
           onChange={changeVideo}
           autoComplete="off"
           placeholder=" "
+          required
         />
         <InputField
           type="text"
@@ -95,6 +96,7 @@ function RegisterVideo() {
           onChange={changeVideo}
           autoComplete="off"
           placeholder=" "
+          required
         />
         <InputField
           type="textarea"

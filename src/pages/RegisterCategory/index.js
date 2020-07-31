@@ -76,6 +76,7 @@ function RegisterCategory() {
           onChange={changeCategory}
           autoComplete="off"
           placeholder=" "
+          required
         />
         <InputField
           type="textarea"
@@ -85,6 +86,7 @@ function RegisterCategory() {
           onChange={changeCategory}
           autoComplete="off"
           placeholder=" "
+          required
         />
         <InputField
           type="color"
@@ -93,6 +95,7 @@ function RegisterCategory() {
           value={category.color}
           onChange={changeCategory}
           autoComplete="off"
+          required
         />
         <ButtonContainer>
           {editingCategory && <SecondaryButton onClick={() => history.push('/dashboard')}>Cancelar</SecondaryButton>}
