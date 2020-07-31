@@ -5,10 +5,12 @@ export const AppWrapper = styled.div`
   padding-top: 94px;
   color: white;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 
   h1 {
     text-align: center;
-    margin: 30px 0;
+    margin: ${({ titleMargin }) => `${titleMargin}px`} 0;
     font-weight: normal;
   }
 
