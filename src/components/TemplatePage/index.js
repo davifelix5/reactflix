@@ -2,6 +2,7 @@ import React from "react";
 import Menu from "../Menu";
 import Footer from "../Footer";
 import { AppWrapper } from "../../styles";
+import Proptypes from 'prop-types';
 
 function TemplatePage({ children, buttonText, buttonPath }) {
   return (
@@ -12,5 +13,15 @@ function TemplatePage({ children, buttonText, buttonPath }) {
     </>
   );
 }
+
+TemplatePage.defaultProps = {
+  buttonText: "Home",
+  buttonPath: "/",
+};
+
+TemplatePage.propTypes = {
+  buttonText: Proptypes.string,
+  buttonPath: Proptypes.string,
+};
 
 export default TemplatePage;
