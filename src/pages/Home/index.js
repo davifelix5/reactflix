@@ -4,15 +4,15 @@ import Carousel from "./components/Carousel";
 import EmbedIframe from "./components/VideoIframeEmbed";
 import Loader from '../../components/Loader'
 
+import api from '../../repositiories/categories'
+
 import TemplatePage from "../../components/TemplatePage";
 
 function Home() {
   const [playVideo, setPlayVideo] = useState("");
   const [categoriesData, setCategoriesData] = useState([])
   useEffect(() => {
-    const URL = "http://localhost:8080/categories?_embed=videos"
-    fetch(URL)
-      .then(res => res.json())
+    api.getCategoriesWithVideos()
       .then(data => setCategoriesData(data))
   }, [])
 
