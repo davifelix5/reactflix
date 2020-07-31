@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import TemplatePage from "../../components/TemplatePage";
 import Form from "../../components/Form";
 import Select from "../../components/FormFields/FormSelect";
 import InputField from "../../components/FormFields/InputField";
 import SubmitButton from "../../components/FormFields/SubmitButton";
 import Loader from '../../components/Loader';
+import { ButtonContainer, CancelButton } from './styles'
 
 function RegisterVideo() {
   const initialValues = {
@@ -16,6 +17,8 @@ function RegisterVideo() {
   };
   const [video, setVideo] = useState(initialValues);
   const [categoryOptions, setCategoryOptions] = useState([])
+  const [editing, setEditing] = useState(false)
+  const { videoId } = useParams()
   const history = useHistory()
 
   useEffect(() => {
@@ -32,21 +35,37 @@ function RegisterVideo() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const URL = "http://localhost:8080/videos";
-    const body = JSON.stringify({ ...video, categoryId: Number(video.categoryId) })
-    const headers = { "Content-Type": "application/json" }
-    fetch(URL, { method: "POST", body, headers})
+    const URL = editing ? `http://localhost:8080/videos/${videoId}` : "http://localhost:8080/videos";
+    const method = editing ? "PUT" : "POST";
+    const body = JSON.stringify({ ...video, categoryId: Number(video.categoryId) });
+    const headers = { "Content-Type": "application/json" };
+    const destination = editing ? `/category/${video.categoryId}` : "/";
+    fetch(URL, { method, body, headers })
       .then(res => res.json())
       .then(() => {
-        alert('Vídeo cadastrado com sucesso!')
-        history.push('/')
+        alert('Operação feita com sucesso!')
         setVideo(initialValues);
+        setEditing(false)
+        history.push(destination)
       })
       .catch(() => alert('Ocorreu um erro, tente novamente!'));
     setVideo(initialValues);
   }
 
-  if (!categoryOptions.length) {
+  useEffect(() => {
+    if (!videoId) return
+    setEditing(true)
+    const URL = `http://localhost:8080/videos/${videoId}`
+    fetch(URL)
+      .then(res => res.json())
+      .then(data => {
+        const { title, url, description, categoryId } = data
+        setVideo({ title, url, description, categoryId })
+      })
+  }, [videoId])
+
+
+  if (!categoryOptions.length || (editing && !video)) {
     return (
       <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
         <h1>Novo vídeo</h1>
@@ -57,7 +76,7 @@ function RegisterVideo() {
 
   return (
     <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
-      <h1>Novo vídeo</h1>
+      <h1>{editing ? "Alterar vídeo" : "Novo vídeo"}</h1>
       <Form onSubmit={handleSubmit}>
         <InputField
           type="text"
@@ -91,8 +110,12 @@ function RegisterVideo() {
           name="categoryId"
           onChange={changeVideo}
           options={categoryOptions}
+          value={video.categoryId}
         />
-        <SubmitButton type="submit">Cadastrar</SubmitButton>
+        <ButtonContainer>
+          {editing && <CancelButton onClick={() => history.push(`/category/${video.categoryId}`)}>Cancelar</CancelButton>}
+          <SubmitButton type="submit">{editing ? "Editar" : "Cadastrar"}</SubmitButton>
+        </ButtonContainer>
       </Form>
     </TemplatePage>
   );

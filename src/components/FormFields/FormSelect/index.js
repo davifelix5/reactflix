@@ -2,10 +2,10 @@ import React from "react";
 import { SelectField } from "./sytles";
 import Proptypes from "prop-types";
 
-function Select({ label, name, onChange, options }) {
+function Select({ label, name, onChange, options, value }) {
   return (
     <SelectField>
-      <select id={name} name={name} onChange={onChange}>
+      <select id={name} name={name} onChange={onChange} value={value}>
         {options.map(category => {
           return (
             <option key={category.id} value={category.id}>

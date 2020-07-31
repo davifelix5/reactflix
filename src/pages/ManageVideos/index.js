@@ -60,17 +60,9 @@ function ManageVideos() {
     }
 
     if (categoryNotFound) {
-        return (
-            <TemplatePage>
-                <h1>404: Categoria não existe</h1>
-            </TemplatePage>
-        )
+        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
     } else if (videosNotFound) {
-        return (
-            <TemplatePage>
-                <h1>404: Não há vídeos registrados</h1>
-            </TemplatePage>
-        )
+        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 
     if (!videos.length) {
@@ -97,7 +89,7 @@ function ManageVideos() {
                             <VideoElement.Actions>
                                 <Button type="delete" onClick={() => handleDelete(video.id)}>Deletar</Button>
                                 <Button as="a" type="watch" href={video.url} target="_blank">Assistir</Button>
-                                <Button type="edit">Editar</Button>
+                                <Button as={Link} type="edit" to={`/cadastro/video/${video.id}`}>Editar</Button>
                             </VideoElement.Actions>
                         </VideoElement>
                     ))}

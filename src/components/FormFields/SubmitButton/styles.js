@@ -10,4 +10,8 @@ export const SubmitBtn = styled.button`
   padding: 10px 30px;
   border-radius: 4px;
   font-size: 21px;
+  transition: all 0.3s;
+  &:hover {
+      opacity: 0.8;
+  }
 `;
