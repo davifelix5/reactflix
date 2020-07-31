@@ -41,7 +41,9 @@ function ManageVideos() {
         fetch(URL)
             .then(res => res.json())
             .then(data => {
-                data.length > 0 ? setVideos(data) : setVideosNotFound(true)
+                console.log(data.length)
+                if (data.length > 0) setVideos(data)
+                else setVideosNotFound(true)
             })
     }, [categoryId])
 
@@ -59,6 +61,14 @@ function ManageVideos() {
             })
     }
 
+    if (categoryNotFound) {
+        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
+    }
+
+    if (videosNotFound) {
+        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
+    }
+
     if (!videos.length) {
         return (
             <TemplatePage>
@@ -66,13 +76,6 @@ function ManageVideos() {
             </TemplatePage>
         )
     }
-
-    if (categoryNotFound) {
-        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
-    } else if (videosNotFound || (!categoryNotFound && !videos.length)) {
-        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
-    }
-
 
     return (
         <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
