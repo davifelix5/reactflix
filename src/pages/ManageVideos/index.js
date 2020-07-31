@@ -45,6 +45,20 @@ function ManageVideos() {
             })
     }, [])
 
+    function handleDelete(videoId) {
+        if (!window.confirm('Tem certeza que deseja deltar esse vídeo?')) return
+        const URL = `http://localhost:8080/videos/${videoId}`
+        const method = "DELETE"
+        setVideos(videos.filter(video => video.id !== videoId))
+        fetch(URL, { method })
+            .then(() => {
+                alert('Video deletado com sucesso')
+            })
+            .catch(() => {
+                alert('Houve um erro. Tente novamente')
+            })
+    }
+
     if (categoryNotFound) {
         return (
             <TemplatePage>
@@ -81,7 +95,7 @@ function ManageVideos() {
                                 <VideoElement.Info.Desc>{video.description}</VideoElement.Info.Desc>
                             </VideoElement.Info>
                             <VideoElement.Actions>
-                                <Button type="delete">Deletar</Button>
+                                <Button type="delete" onClick={() => handleDelete(video.id)}>Deletar</Button>
                                 <Button as="a" type="watch" href={video.url} target="_blank">Assistir</Button>
                                 <Button type="edit">Editar</Button>
                             </VideoElement.Actions>
