@@ -43,3 +43,20 @@ export const VideoCardGroupContainer = styled.section`
     margin-bottom: 16px;
   }
 `;
+
+export const VideosNotFoundWrapper = styled.div`
+  width: 100%;
+  height: 90px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+`;
+
+VideosNotFoundWrapper.Message = styled.p`
+  font-size: 1.2em;
+`;
+
+VideosNotFoundWrapper.Link = styled.a`
+  font-size: 1em;
+`;
