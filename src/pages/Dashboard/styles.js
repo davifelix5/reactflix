@@ -17,6 +17,5 @@ export const ButtonContainer = styled.div`
 
 export const DashboardWrapper = styled.div`
 
-    justify-self: center;
     align-self: center;
 `
