@@ -5,23 +5,21 @@ import TemplatePage from '../../components/TemplatePage';
 import Loader from '../../components/Loader'
 import { Link } from 'react-router-dom'
 import { ButtonContainer, DashboardWrapper } from './styles'
+import categoriesApi from '../../repositiories/categories'
 
 function Dashboard() {
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
-        const URL = "http://localhost:8080/categories/"
-        fetch(URL)
-            .then(res => res.json())
+        categoriesApi.getCategories()
             .then(data => setCategories([...data]));
     }, []);
 
     function handleRemove(category) {
         if (window.confirm("Certeza que deseja deletar?")) {
             setCategories(categories.filter(cat => cat !== category));
-            const URL = `http://localhost:8080/categories/${category.id}`
-            const METHOD = "DELETE"
-            fetch(URL, { method: METHOD })
+            categoriesApi.deleteCategory(category.id)
+                .then(() => alert('Categoria deletada com sucesso!'))
         }
     }
 
