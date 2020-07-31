@@ -5,7 +5,7 @@ import Form from "../../components/Form";
 import Select from "../../components/FormFields/FormSelect";
 import InputField from "../../components/FormFields/InputField";
 import Loader from '../../components/Loader';
-import { ButtonContainer, CancelButton } from './styles'
+import { ButtonContainer } from './styles'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 

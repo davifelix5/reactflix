@@ -5,6 +5,8 @@ import InputField from "../../components/FormFields/InputField";
 import Loader from '../../components/Loader'
 import { useParams, useHistory } from 'react-router-dom';
 import PrimaryButton from '../../components/PrimaryButton'
+import SecondaryButton from '../../components/SecondaryButton'
+import { ButtonContainer } from './styles'
 
 function RegisterCategory() {
   const initialValues = {
@@ -104,7 +106,10 @@ function RegisterCategory() {
           onChange={changeCategory}
           autoComplete="off"
         />
-        <PrimaryButton type="submit">{action}</PrimaryButton>
+        <ButtonContainer>
+          {editingCategory && <SecondaryButton onClick={() => history.push('/dashboard')}>Cancelar</SecondaryButton>}
+          <PrimaryButton type="submit">{action}</PrimaryButton>
+        </ButtonContainer>
       </Form>
     </TemplatePage>
   );
