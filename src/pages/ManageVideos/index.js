@@ -34,7 +34,7 @@ function ManageVideos() {
             .then(data => {
                 setCategory(data)
             })
-    }, [])
+    }, [categoryId])
 
     useEffect(() => {
         const URL = `http://localhost:8080/categories/${categoryId}/videos`
@@ -43,7 +43,7 @@ function ManageVideos() {
             .then(data => {
                 data.length > 0 ? setVideos(data) : setVideosNotFound(true)
             })
-    }, [])
+    }, [categoryId])
 
     function handleDelete(videoId) {
         if (!window.confirm('Tem certeza que deseja deltar esse vídeo?')) return
@@ -61,7 +61,7 @@ function ManageVideos() {
 
     if (categoryNotFound) {
         return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
-    } else if (videosNotFound) {
+    } else if (videosNotFound || (!categoryNotFound && !videos.length)) {
         return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 

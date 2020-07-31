@@ -5,6 +5,7 @@ import Form from "../../components/Form";
 import InputField from "../../components/FormFields/InputField";
 import SubmitButton from "../../components/FormFields/SubmitButton";
 import Loader from '../../components/Loader'
+import { Link } from "react-router-dom"
 
 function RegisterCategory() {
   const initialValues = {
@@ -102,6 +103,7 @@ function RegisterCategory() {
               <TableElement.Data as="th" hideOnMobile>Descrição</TableElement.Data >
               <TableElement.Data as="th" isAction>Editar</TableElement.Data >
               <TableElement.Data as="th" isAction>Remover</TableElement.Data >
+              <TableElement.Data as="th" isAction>Vídeos</TableElement.Data >
             </tr>
           </thead>
           <tbody>
@@ -123,6 +125,12 @@ function RegisterCategory() {
                     onClick={() => handleRemove(category)}
                   >
                     Remover
+                  </TableElement.Data>
+                  <TableElement.Data
+                    isAction
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Link style={{ textDecoration: 'none' }} to={`/category/${category.id}`}>Gerenciar</Link>
                   </TableElement.Data>
                 </tr>
               );

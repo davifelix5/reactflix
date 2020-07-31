@@ -49,13 +49,16 @@ function Home() {
         category={categoriesData[0]}
       />
 
-      {categoriesData && categoriesData.slice(1).map(category => (
-        <Carousel
-          key={category.id}
-          setPlayVideo={setPlayVideo}
-          category={category}
-        />
-      ))}
+      {categoriesData && categoriesData.slice(1).map(category => {
+        if (!category.videos.length) return
+        return (
+          <Carousel
+            key={category.id}
+            setPlayVideo={setPlayVideo}
+            category={category}
+          />
+        )
+      })}
 
     </TemplatePage>
   );
