@@ -25,7 +25,6 @@ function ManageVideos() {
     const [videos, setVideos] = useState([])
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         categoriesApi.getCategory(categoryId)
