@@ -59,12 +59,6 @@ function ManageVideos() {
             })
     }
 
-    if (categoryNotFound) {
-        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
-    } else if (videosNotFound || (!categoryNotFound && !videos.length)) {
-        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
-    }
-
     if (!videos.length) {
         return (
             <TemplatePage>
@@ -73,8 +67,15 @@ function ManageVideos() {
         )
     }
 
+    if (categoryNotFound) {
+        return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
+    } else if (videosNotFound || (!categoryNotFound && !videos.length)) {
+        return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
+    }
+
+
     return (
-        <TemplatePage>
+        <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
             <h1>Vídeo da categoria {category.name}</h1>
             {videos ? (
                 <VideoList>
