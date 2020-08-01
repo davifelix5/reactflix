@@ -47,8 +47,10 @@ function RegisterCategory() {
         history.push(destination)
         clearForm();
       })
-      .catch(() => alert('Ocorreu um erro'))
-      .finally(() => setSubmiting(false))
+      .catch(() => {
+        alert('Ocorreu um erro')
+        setSubmiting(false)
+      })
   }
 
   function handleEdit(category) {

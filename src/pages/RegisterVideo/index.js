@@ -51,8 +51,8 @@ function RegisterVideo() {
       })
       .catch(() => {
         alert('Ocorreu um erro, tente novamente!')
+        setSubmiting(false)
       })
-      .finally(() => setSubmiting(false));
   }
 
   function handleEdit(video) {
