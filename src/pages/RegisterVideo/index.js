@@ -11,6 +11,7 @@ import SecondaryButton from '../../components/SecondaryButton'
 import videosApi from '../../repositiories/videos'
 import categoriesApi from '../../repositiories/categories'
 import useForm from '../../hooks/form'
+import MessageModal from '../../components/Modals/MessageModal'
 
 function RegisterVideo() {
   const defaultVideo = {
@@ -22,11 +23,12 @@ function RegisterVideo() {
   const [categoryOptions, setCategoryOptions] = useState([])
   const [editing, setEditing] = useState(false)
   const [submiting, setSubmiting] = useState(false)
+  const [message, setMessage] = useState('')
+  const [destination, setDestination] = useState('')
   const {
     values: video,
     setValues: setVideo,
     handleChange: changeVideo,
-    clearForm
   } = useForm(defaultVideo)
   const { videoId } = useParams()
   const history = useHistory()
@@ -41,16 +43,16 @@ function RegisterVideo() {
     if (submiting) return
     setSubmiting(true)
     const operation = editing ? videosApi.editVideo : videosApi.registerVideo
-    const destination = editing ? `/category/${video.categoryId}` : '/'
+    const result = editing ? 'editado' : 'cadastrado'
+    setDestination(editing ? `/category/${video.categoryId}` : '/')
     operation({ ...video, categoryId: Number(video.categoryId) })
       .then(() => {
-        alert('Operação feita com sucesso!')
-        clearForm()
+        setMessage(`Video ${result} com sucessso`)
+        setSubmiting(false)
         setEditing(false)
-        history.push(destination)
       })
       .catch(() => {
-        alert('Ocorreu um erro, tente novamente!')
+        setMessage(`Video ${result} com sucessso`)
         setSubmiting(false)
       })
   }
@@ -82,6 +84,7 @@ function RegisterVideo() {
     <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
 
       <h1>{editing ? "Alterar vídeo" : "Novo vídeo"}</h1>
+      {message && <MessageModal message={message} disable={() => history.push(destination)} />}
       {submiting ? (
         <Loader />
       ) : (
