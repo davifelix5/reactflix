@@ -9,6 +9,7 @@ import SecondaryButton from '../../components/SecondaryButton'
 import { ButtonContainer } from './styles'
 import categoriesApi from '../../repositiories/categories'
 import useForm from '../../hooks/form'
+import MessageModal from '../../components/Modals/MessageModal'
 
 function RegisterCategory() {
   const defaultCateogory = {
@@ -20,6 +21,8 @@ function RegisterCategory() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [action, setAction] = useState("Cadastrar");
   const [submiting, setSubmiting] = useState(false)
+  const [destination, setDestination] = useState('')
+  const [message, setMessage] = useState('')
   const {
     values: category,
     setValues: setCategory,
@@ -40,15 +43,15 @@ function RegisterCategory() {
     if (submiting) return
     setSubmiting(true)
     const operation = editingCategory ? categoriesApi.editCategory : categoriesApi.registerCategory
-    const destination = editingCategory ? "/dashboard" : "/"
+    const result = editingCategory ? 'editada' : 'cadastrada'
+    setDestination(editingCategory ? "/dashboard" : "/")
     operation({ ...category })
       .then(() => {
-        alert('Operação feita com sucesso')
-        history.push(destination)
-        clearForm();
+        setMessage(`Categoria ${result} com sucesso!`)
+        setSubmiting(false)
       })
       .catch(() => {
-        alert('Ocorreu um erro')
+        setMessage('Ocorreu um erro. Tente novamente')
         setSubmiting(false)
       })
   }
@@ -74,6 +77,7 @@ function RegisterCategory() {
   return (
     <TemplatePage>
       <h1>Cadastro de categoria</h1>
+      {message && <MessageModal message={message} disable={() => history.push(destination)} />}
       {submiting ? (
         <Loader />
       ) : (
