@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TemplatePage from "../../components/TemplatePage";
 import Form from "../../components/Form";
 import InputField from "../../components/FormFields/InputField";
@@ -53,10 +53,10 @@ function RegisterCategory() {
       })
   }
 
-  function handleEdit(category) {
+  const handleEdit = useCallback((category) => {
     setCategory(category);
     setEditingCategory(category);
-  }
+  }, [setCategory])
 
   useEffect(() => {
     if (!categoryId) return
@@ -65,7 +65,7 @@ function RegisterCategory() {
         console.log(data)
         handleEdit({ ...data })
       })
-  }, [categoryId])
+  }, [categoryId, handleEdit])
 
   if (categoryId && !editingCategory) {
     return <TemplatePage><Loader /></TemplatePage>

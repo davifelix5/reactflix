@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import TemplatePage from "../../components/TemplatePage";
 import Form from "../../components/Form";
@@ -55,10 +55,10 @@ function RegisterVideo() {
       })
   }
 
-  function handleEdit(video) {
-    setEditing(true)
-    setVideo({ ...video })
-  }
+  const handleEdit = useCallback((category) => {
+    setVideo(category);
+    setEditing(category);
+  }, [setVideo])
 
   useEffect(() => {
     if (!videoId) return
@@ -66,7 +66,7 @@ function RegisterVideo() {
       .then(data => {
         handleEdit(data)
       })
-  }, [videoId])
+  }, [videoId, handleEdit])
 
 
   if (!categoryOptions.length || (editing && !video)) {
@@ -80,6 +80,7 @@ function RegisterVideo() {
 
   return (
     <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
+
       <h1>{editing ? "Alterar vídeo" : "Novo vídeo"}</h1>
       {submiting ? (
         <Loader />
