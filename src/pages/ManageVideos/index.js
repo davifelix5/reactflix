@@ -6,6 +6,8 @@ import { VideoList, VideoElement, Button } from './styles';
 import { Link } from 'react-router-dom'
 import categoriesApi from '../../repositiories/categories'
 import videosApi from '../../repositiories/videos'
+import MessageModal from '../../components/Modals/MessageModal'
+import PromptModal from '../../components/Modals/PromptModal'
 
 function getYouTubeId(youtubeURL) {
     return youtubeURL.replace(
@@ -25,6 +27,10 @@ function ManageVideos() {
     const [videos, setVideos] = useState([])
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
+    const [message, setMessage] = useState('')
+    const [removeConfirmed, setRemoveConfirmed] = useState(false)
+    const [videoToRemove, setVideoToRemove] = useState(null)
+    const [allVideosRemoved, setAllVideosRemoved] = useState(false)
 
     useEffect(() => {
         categoriesApi.getCategory(categoryId)
@@ -42,15 +48,22 @@ function ManageVideos() {
             })
     }, [categoryId])
 
-    function handleDelete(videoId) {
-        if (!window.confirm('Tem certeza que deseja deltar esse vídeo?')) return
-        setVideos(videos.filter(video => video.id !== videoId))
-        videosApi.deleteVideo(videoId)
+    useEffect(handleDelete, [removeConfirmed, handleDelete])
+
+    function handleDelete() {
+        if (!removeConfirmed) return
+        setVideos(videos.filter(video => video.id !== videoToRemove.id))
+        if (videos.length === 1) setAllVideosRemoved(true)
+        videosApi.deleteVideo(videoToRemove.id)
             .then(() => {
-                alert('Video deletado com sucesso')
+                setMessage('Video deletado com sucesso')
             })
             .catch(() => {
-                alert('Houve um erro. Tente novamente')
+                setMessage('Houve um erro. Tente novamente')
+            })
+            .finally(() => {
+                setRemoveConfirmed(false)
+                setVideoToRemove(null)
             })
     }
 
@@ -58,7 +71,7 @@ function ManageVideos() {
         return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
     }
 
-    if (videosNotFound) {
+    if (videosNotFound || allVideosRemoved) {
         return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 
@@ -69,10 +82,17 @@ function ManageVideos() {
             </TemplatePage>
         )
     }
-
     return (
         <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
             <h1>Vídeo da categoria {category.name}</h1>
+            {message && <MessageModal message={message} disable={() => setMessage('')} />}
+            {videoToRemove && (
+                <PromptModal
+                    message={`Tem certeza que deseja remover o vídeo "${videoToRemove.title}"?`}
+                    accept={() => setRemoveConfirmed(true)}
+                    reject={() => { setVideoToRemove(false) }}
+                />
+            )}
             {videos ? (
                 <VideoList>
                     {videos.map(video => (
@@ -84,7 +104,7 @@ function ManageVideos() {
                                 <VideoElement.Info.Desc>{video.description}</VideoElement.Info.Desc>
                             </VideoElement.Info>
                             <VideoElement.Actions>
-                                <Button type="delete" onClick={() => handleDelete(video.id)}>Deletar</Button>
+                                <Button type="delete" onClick={() => setVideoToRemove(video)}>Deletar</Button>
                                 <Button as="a" type="watch" href={video.url} target="_blank">Assistir</Button>
                                 <Button as={Link} type="edit" to={`/cadastro/video/${video.id}`}>Editar</Button>
                             </VideoElement.Actions>
