@@ -21,6 +21,7 @@ function RegisterVideo() {
   const [video, setVideo] = useState(initialValues);
   const [categoryOptions, setCategoryOptions] = useState([])
   const [editing, setEditing] = useState(false)
+  const [submiting, setSubmiting] = useState(false)
   const { videoId } = useParams()
   const history = useHistory()
 
@@ -36,6 +37,8 @@ function RegisterVideo() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (submiting) return
+    setSubmiting(true)
     const operation = editing ? videosApi.editVideo : videosApi.registerVideo
     const destination = editing ? `/category/${video.categoryId}` : '/'
     operation({ ...video, categoryId: Number(video.categoryId) })
@@ -48,7 +51,8 @@ function RegisterVideo() {
       .catch(() => {
         alert('Ocorreu um erro, tente novamente!')
         setVideo(initialValues);
-      });
+      })
+      .finally(() => setSubmiting(false));
   }
 
   function handleEdit(video) {
@@ -77,48 +81,52 @@ function RegisterVideo() {
   return (
     <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
       <h1>{editing ? "Alterar vídeo" : "Novo vídeo"}</h1>
-      <Form onSubmit={handleSubmit}>
-        <InputField
-          type="text"
-          label="Título"
-          name="title"
-          value={video.title}
-          onChange={changeVideo}
-          autoComplete="off"
-          placeholder=" "
-          required
-        />
-        <InputField
-          type="text"
-          label="Link do vídeo"
-          name="url"
-          value={video.url}
-          onChange={changeVideo}
-          autoComplete="off"
-          placeholder=" "
-          required
-        />
-        <InputField
-          type="textarea"
-          label="Descrição"
-          name="description"
-          value={video.description}
-          onChange={changeVideo}
-          autoComplete="off"
-          placeholder=" "
-        />
-        <Select
-          label="Categoria"
-          name="categoryId"
-          onChange={changeVideo}
-          options={categoryOptions}
-          value={video.categoryId}
-        />
-        <ButtonContainer>
-          {editing && <SecondaryButton onClick={() => history.push(`/category/${video.categoryId}`)}>Cancelar</SecondaryButton>}
-          <PrimaryButton type="submit">{editing ? "Editar" : "Cadastrar"}</PrimaryButton>
-        </ButtonContainer>
-      </Form>
+      {submiting ? (
+        <Loader />
+      ) : (
+          <Form onSubmit={handleSubmit}>
+            <InputField
+              type="text"
+              label="Título"
+              name="title"
+              value={video.title}
+              onChange={changeVideo}
+              autoComplete="off"
+              placeholder=" "
+              required
+            />
+            <InputField
+              type="text"
+              label="Link do vídeo"
+              name="url"
+              value={video.url}
+              onChange={changeVideo}
+              autoComplete="off"
+              placeholder=" "
+              required
+            />
+            <InputField
+              type="textarea"
+              label="Descrição"
+              name="description"
+              value={video.description}
+              onChange={changeVideo}
+              autoComplete="off"
+              placeholder=" "
+            />
+            <Select
+              label="Categoria"
+              name="categoryId"
+              onChange={changeVideo}
+              options={categoryOptions}
+              value={video.categoryId}
+            />
+            <ButtonContainer>
+              {editing && <SecondaryButton onClick={() => history.push(`/category/${video.categoryId}`)}>Cancelar</SecondaryButton>}
+              <PrimaryButton type="submit">{editing ? "Editar" : "Cadastrar"}</PrimaryButton>
+            </ButtonContainer>
+          </Form>
+        )}
     </TemplatePage>
   );
 }
