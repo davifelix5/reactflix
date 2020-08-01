@@ -10,9 +10,7 @@ const spin = keyframes`
 `
 
 export const LoaderContainer = styled.div`
-    width: 100%;
-    height: 100%;
-    height: calc(100vh - 200px);
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;

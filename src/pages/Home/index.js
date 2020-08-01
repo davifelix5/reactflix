@@ -18,7 +18,7 @@ function Home() {
 
   if (!categoriesData.length) {
     return (
-      <TemplatePage buttonText="Novo vídeo" buttonPath="/cadastro/video">
+      <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
         <Loader />
       </TemplatePage>
     )

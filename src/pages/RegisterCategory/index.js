@@ -8,17 +8,24 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { ButtonContainer } from './styles'
 import categoriesApi from '../../repositiories/categories'
+import useForm from '../../hooks/form'
 
 function RegisterCategory() {
-  const initialValues = {
+  const defaultCateogory = {
     name: "",
     description: "",
-    color: "#000"
+    color: "#aadd00"
   };
 
-  const [category, setCategory] = useState(initialValues);
   const [editingCategory, setEditingCategory] = useState(null);
   const [action, setAction] = useState("Cadastrar");
+  const [submiting, setSubmiting] = useState(false)
+  const {
+    values: category,
+    setValues: setCategory,
+    handleChange: changeCategory,
+    clearForm,
+  } = useForm(defaultCateogory)
   const { categoryId } = useParams()
   const history = useHistory()
 
@@ -30,15 +37,20 @@ function RegisterCategory() {
 
   function handleSubmit(event) {
     event.preventDefault();
+    if (submiting) return
+    setSubmiting(true)
     const operation = editingCategory ? categoriesApi.editCategory : categoriesApi.registerCategory
     const destination = editingCategory ? "/dashboard" : "/"
     operation({ ...category })
       .then(() => {
         alert('Operação feita com sucesso')
         history.push(destination)
-        setCategory(initialValues);
+        clearForm();
       })
-      .catch(() => alert('Ocorreu um erro'))
+      .catch(() => {
+        alert('Ocorreu um erro')
+        setSubmiting(false)
+      })
   }
 
   function handleEdit(category) {
@@ -59,49 +71,48 @@ function RegisterCategory() {
     return <TemplatePage><Loader /></TemplatePage>
   }
 
-  function changeCategory(e) {
-    const { name, value } = e.target;
-    setCategory({ ...category, [name]: value });
-  }
-
   return (
     <TemplatePage>
       <h1>Cadastro de categoria</h1>
-      <Form onSubmit={handleSubmit}>
-        <InputField
-          type="text"
-          label="Nome da categoria"
-          name="name"
-          value={category.name}
-          onChange={changeCategory}
-          autoComplete="off"
-          placeholder=" "
-          required
-        />
-        <InputField
-          type="textarea"
-          label="Descrição"
-          name="description"
-          value={category.description}
-          onChange={changeCategory}
-          autoComplete="off"
-          placeholder=" "
-          required
-        />
-        <InputField
-          type="color"
-          label="Cor"
-          name="color"
-          value={category.color}
-          onChange={changeCategory}
-          autoComplete="off"
-          required
-        />
-        <ButtonContainer>
-          {editingCategory && <SecondaryButton onClick={() => history.push('/dashboard')}>Cancelar</SecondaryButton>}
-          <PrimaryButton type="submit">{action}</PrimaryButton>
-        </ButtonContainer>
-      </Form>
+      {submiting ? (
+        <Loader />
+      ) : (
+          <Form onSubmit={handleSubmit}>
+            <InputField
+              type="text"
+              label="Nome da categoria"
+              name="name"
+              value={category.name}
+              onChange={changeCategory}
+              autoComplete="off"
+              placeholder=" "
+              required
+            />
+            <InputField
+              type="textarea"
+              label="Descrição"
+              name="description"
+              value={category.description}
+              onChange={changeCategory}
+              autoComplete="off"
+              placeholder=" "
+              required
+            />
+            <InputField
+              type="color"
+              label="Cor"
+              name="color"
+              value={category.color}
+              onChange={changeCategory}
+              autoComplete="off"
+              required
+            />
+            <ButtonContainer>
+              {editingCategory && <SecondaryButton onClick={() => history.push('/dashboard')}>Cancelar</SecondaryButton>}
+              <PrimaryButton type="submit">{action}</PrimaryButton>
+            </ButtonContainer>
+          </Form>
+        )}
     </TemplatePage>
   );
 }
