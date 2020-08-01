@@ -31,6 +31,7 @@ function ManageVideos() {
     const [removeConfirmed, setRemoveConfirmed] = useState(false)
     const [videoToRemove, setVideoToRemove] = useState(null)
     const [allVideosRemoved, setAllVideosRemoved] = useState(false)
+
     useEffect(() => {
         categoriesApi.getCategory(categoryId)
             .then(data => {
@@ -47,13 +48,7 @@ function ManageVideos() {
             })
     }, [categoryId])
 
-    useEffect(() => {
-        handleDelete()
-        return () => {
-            setRemoveConfirmed(false)
-            setVideoToRemove(null)
-        }
-    }, [removeConfirmed])
+    useEffect(handleDelete, [removeConfirmed, handleDelete])
 
     function handleDelete() {
         if (!removeConfirmed) return
@@ -65,6 +60,10 @@ function ManageVideos() {
             })
             .catch(() => {
                 setMessage('Houve um erro. Tente novamente')
+            })
+            .finally(() => {
+                setRemoveConfirmed(false)
+                setVideoToRemove(null)
             })
     }
 

@@ -27,7 +27,6 @@ function RegisterCategory() {
     values: category,
     setValues: setCategory,
     handleChange: changeCategory,
-    clearForm,
   } = useForm(defaultCateogory)
   const { categoryId } = useParams()
   const history = useHistory()

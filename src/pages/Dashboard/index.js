@@ -20,13 +20,7 @@ function Dashboard() {
             .then(data => setCategories([...data]));
     }, []);
 
-    useEffect(() => {
-        handleRemove()
-        return () => {
-            setRemovingCategory(null)
-            setRemoveConfirmed(false)
-        }
-    }, [removeConfirmed, setCategories])
+    useEffect(handleRemove, [removeConfirmed, setCategories])
 
     function handleRemove() {
         if (!removeConfirmed) return
@@ -37,6 +31,10 @@ function Dashboard() {
             })
             .catch(() => {
                 setMessage('Houve um erro. Tente novamente')
+            })
+            .finally(() => {
+                setRemovingCategory(null)
+                setRemoveConfirmed(false)
             })
     }
 
@@ -50,10 +48,7 @@ function Dashboard() {
             {removingCategory && (
                 <PromptModal
                     message={`Tem certeza que deseja deletar a categoria ${removingCategory.name} `}
-                    accept={() => {
-                        console.log('Hey')
-                        setRemoveConfirmed(true)
-                    }}
+                    accept={() => setRemoveConfirmed(true)}
                     reject={() => setRemovingCategory(null)}
                 />
             )}
