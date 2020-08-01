@@ -10,18 +10,24 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import videosApi from '../../repositiories/videos'
 import categoriesApi from '../../repositiories/categories'
+import useForm from '../../hooks/form'
 
 function RegisterVideo() {
-  const initialValues = {
+  const defaultVideo = {
     title: "",
     url: "",
     description: "",
     categoryId: 1
   };
-  const [video, setVideo] = useState(initialValues);
   const [categoryOptions, setCategoryOptions] = useState([])
   const [editing, setEditing] = useState(false)
   const [submiting, setSubmiting] = useState(false)
+  const {
+    values: video,
+    setValues: setVideo,
+    handleChange: changeVideo,
+    clearForm
+  } = useForm(defaultVideo)
   const { videoId } = useParams()
   const history = useHistory()
 
@@ -29,11 +35,6 @@ function RegisterVideo() {
     categoriesApi.getCategories()
       .then(data => setCategoryOptions([...data]))
   }, [])
-
-  function changeVideo(e) {
-    const { name, value } = e.target;
-    setVideo({ ...video, [name]: value });
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -44,13 +45,12 @@ function RegisterVideo() {
     operation({ ...video, categoryId: Number(video.categoryId) })
       .then(() => {
         alert('Operação feita com sucesso!')
-        setVideo(initialValues);
+        clearForm()
         setEditing(false)
         history.push(destination)
       })
       .catch(() => {
         alert('Ocorreu um erro, tente novamente!')
-        setVideo(initialValues);
       })
       .finally(() => setSubmiting(false));
   }

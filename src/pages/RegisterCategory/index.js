@@ -8,18 +8,24 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { ButtonContainer } from './styles'
 import categoriesApi from '../../repositiories/categories'
+import useForm from '../../hooks/form'
 
 function RegisterCategory() {
-  const initialValues = {
+  const defaultCateogory = {
     name: "",
     description: "",
-    color: "#000"
+    color: "#aadd00"
   };
 
-  const [category, setCategory] = useState(initialValues);
   const [editingCategory, setEditingCategory] = useState(null);
   const [action, setAction] = useState("Cadastrar");
   const [submiting, setSubmiting] = useState(false)
+  const {
+    values: category,
+    setValues: setCategory,
+    handleChange: changeCategory,
+    clearForm,
+  } = useForm(defaultCateogory)
   const { categoryId } = useParams()
   const history = useHistory()
 
@@ -39,7 +45,7 @@ function RegisterCategory() {
       .then(() => {
         alert('Operação feita com sucesso')
         history.push(destination)
-        setCategory(initialValues);
+        clearForm();
       })
       .catch(() => alert('Ocorreu um erro'))
       .finally(() => setSubmiting(false))
@@ -61,11 +67,6 @@ function RegisterCategory() {
 
   if (categoryId && !editingCategory) {
     return <TemplatePage><Loader /></TemplatePage>
-  }
-
-  function changeCategory(e) {
-    const { name, value } = e.target;
-    setCategory({ ...category, [name]: value });
   }
 
   return (
