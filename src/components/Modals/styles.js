@@ -13,23 +13,28 @@ export const MessageWrapper = styled.div`
     right: 50%;
     z-index: 500;
     
-    width: 300px;
-    height: 190px;
+    width: 550px;
     padding: 20px;
 
     transform: translateX(50%);
     
     border-radius: 4px;
     border: 3px solid var(--primary);
-
+    @media (max-width: 800px) {
+        width: 300px;
+    }
 `;
 
 export const MessageContent = styled.p`
     height: 100%;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
     font-size: 1.4em;
     text-align: center;
+    @media (max-width: 800px) {
+        font-size: 1.2em;
+    }
 
 `;
 
