@@ -13,28 +13,23 @@ function Dashboard() {
     const [categories, setCategories] = useState([]);
     const [message, setMessage] = useState('')
     const [removingCategory, setRemovingCategory] = useState(null)
-    const [removeConfirmed, setRemoveConfirmed] = useState(false)
 
     useEffect(() => {
         categoriesApi.getCategories()
             .then(data => setCategories([...data]));
     }, []);
 
-    useEffect(handleRemove, [removeConfirmed, setCategories])
-
     function handleRemove() {
-        if (!removeConfirmed) return
-        setCategories(categories.filter(cat => cat !== removingCategory));
         categoriesApi.deleteCategory(removingCategory.id)
             .then(() => {
+                setCategories(categories.filter(cat => cat !== removingCategory));
                 setMessage('Vídeo removido com sucesso!')
             })
-            .catch(() => {
-                setMessage('Houve um erro. Tente novamente')
+            .catch((err) => {
+                setMessage('Houve um erro! Tente novamente')
             })
             .finally(() => {
                 setRemovingCategory(null)
-                setRemoveConfirmed(false)
             })
     }
 
@@ -48,7 +43,7 @@ function Dashboard() {
             {removingCategory && (
                 <PromptModal
                     message={`Tem certeza que deseja deletar a categoria ${removingCategory.name} `}
-                    accept={() => setRemoveConfirmed(true)}
+                    accept={() => handleRemove()}
                     reject={() => setRemovingCategory(null)}
                 />
             )}

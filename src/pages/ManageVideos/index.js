@@ -28,7 +28,6 @@ function ManageVideos() {
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
     const [message, setMessage] = useState('')
-    const [removeConfirmed, setRemoveConfirmed] = useState(false)
     const [videoToRemove, setVideoToRemove] = useState(null)
     const [allVideosRemoved, setAllVideosRemoved] = useState(false)
 
@@ -48,34 +47,30 @@ function ManageVideos() {
             })
     }, [categoryId])
 
-    useEffect(handleDelete, [removeConfirmed, handleDelete])
-
     function handleDelete() {
-        if (!removeConfirmed) return
-        setVideos(videos.filter(video => video.id !== videoToRemove.id))
-        if (videos.length === 1) setAllVideosRemoved(true)
         videosApi.deleteVideo(videoToRemove.id)
             .then(() => {
+                setVideos(videos.filter(video => video.id !== videoToRemove.id))
                 setMessage('Video deletado com sucesso')
             })
             .catch(() => {
                 setMessage('Houve um erro. Tente novamente')
             })
             .finally(() => {
-                setRemoveConfirmed(false)
                 setVideoToRemove(null)
             })
+        if (videos.length === 1) setAllVideosRemoved(true)
     }
 
     if (categoryNotFound) {
         return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
     }
 
-    if (videosNotFound || allVideosRemoved) {
+    if (videosNotFound) {
         return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 
-    if (!videos.length) {
+    if (!videos.length && !allVideosRemoved) {
         return (
             <TemplatePage>
                 <Loader />
@@ -89,11 +84,11 @@ function ManageVideos() {
             {videoToRemove && (
                 <PromptModal
                     message={`Tem certeza que deseja remover o vídeo "${videoToRemove.title}"?`}
-                    accept={() => setRemoveConfirmed(true)}
-                    reject={() => { setVideoToRemove(false) }}
+                    accept={handleDelete}
+                    reject={() => { setVideoToRemove(null) }}
                 />
             )}
-            {videos ? (
+            {videos.length ? (
                 <VideoList>
                     {videos.map(video => (
                         <VideoElement key={video.id} color={category.color}>
@@ -111,7 +106,7 @@ function ManageVideos() {
                         </VideoElement>
                     ))}
                 </VideoList>
-            ) : <Loader />}
+            ) : <p style={{ alignSelf: 'center' }}>Não há videos registrados </p>}
         </TemplatePage>
     )
 }
