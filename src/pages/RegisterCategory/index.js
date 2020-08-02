@@ -88,7 +88,6 @@ function RegisterCategory() {
               value={category.name}
               onChange={changeCategory}
               autoComplete="off"
-              placeholder=" "
               required
             />
             <InputField
@@ -98,7 +97,6 @@ function RegisterCategory() {
               value={category.description}
               onChange={changeCategory}
               autoComplete="off"
-              placeholder=" "
               required
             />
             <InputField

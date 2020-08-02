@@ -34,8 +34,8 @@ export const InputWrapper = styled.div`
     transition: all 0.1s;
     font-weight: normal;
   }
-  input[type="text"]:focus + label,
-  input[type="text"]:not(:placeholder-shown) + label,
+  input:not([type="color"]):focus + label,
+  input:not([type="color"]):not(:placeholder-shown) + label,
   textarea:focus + label,
   textarea:not(:placeholder-shown) + label {
     font-weight: 200;

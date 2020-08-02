@@ -10,6 +10,7 @@ function FormField({ type, label, name, value, onChange, ...rest }) {
     name,
     value,
     onChange,
+    placeholder: " ",
     ...rest
   };
   return (
@@ -23,7 +24,7 @@ function FormField({ type, label, name, value, onChange, ...rest }) {
 FormField.defaultProps = {
   type: "text",
   value: "",
-  onChange: () => {}
+  onChange: () => { }
 };
 
 FormField.propTypes = {

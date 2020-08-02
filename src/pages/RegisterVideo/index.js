@@ -96,7 +96,6 @@ function RegisterVideo() {
               value={video.title}
               onChange={changeVideo}
               autoComplete="off"
-              placeholder=" "
               required
             />
             <InputField
@@ -106,7 +105,6 @@ function RegisterVideo() {
               value={video.url}
               onChange={changeVideo}
               autoComplete="off"
-              placeholder=" "
               required
             />
             <InputField
@@ -116,7 +114,6 @@ function RegisterVideo() {
               value={video.description}
               onChange={changeVideo}
               autoComplete="off"
-              placeholder=" "
             />
             <Select
               label="Categoria"
