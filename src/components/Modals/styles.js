@@ -8,7 +8,7 @@ export const MessageWrapper = styled.div`
     flex-direction: column;
     justify-content: space-between;
 
-    position: absolute;
+    position: fixed;
     top: 5%;
     right: 50%;
     z-index: 500;
