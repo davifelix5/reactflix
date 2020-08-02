@@ -48,7 +48,6 @@ function ManageVideos() {
     }, [categoryId])
 
     function handleDelete() {
-        if (videos.length === 1) setAllVideosRemoved(true)
         videosApi.deleteVideo(videoToRemove.id)
             .then(() => {
                 setVideos(videos.filter(video => video.id !== videoToRemove.id))
@@ -60,17 +59,18 @@ function ManageVideos() {
             .finally(() => {
                 setVideoToRemove(null)
             })
+        if (videos.length === 1) setAllVideosRemoved(true)
     }
 
     if (categoryNotFound) {
         return <TemplatePage><h1>404: Categoria não existe</h1></TemplatePage>
     }
 
-    if (videosNotFound || allVideosRemoved) {
+    if (videosNotFound) {
         return <TemplatePage><h1>404: Não há vídeos registrados</h1></TemplatePage>
     }
 
-    if (!videos.length) {
+    if (!videos.length && !allVideosRemoved) {
         return (
             <TemplatePage>
                 <Loader />
@@ -88,7 +88,7 @@ function ManageVideos() {
                     reject={() => { setVideoToRemove(null) }}
                 />
             )}
-            {videos ? (
+            {videos.length ? (
                 <VideoList>
                     {videos.map(video => (
                         <VideoElement key={video.id} color={category.color}>
@@ -106,7 +106,7 @@ function ManageVideos() {
                         </VideoElement>
                     ))}
                 </VideoList>
-            ) : <Loader />}
+            ) : <p style={{ alignSelf: 'center' }}>Não há videos registrados </p>}
         </TemplatePage>
     )
 }
