@@ -12,7 +12,7 @@ import TemplatePage from "../../components/TemplatePage";
 function Home() {
   const [playVideo, setPlayVideo] = useState("");
   const [categoriesData, setCategoriesData] = useState([])
-  const [searching, setSearching] = useState(false)
+  const [searching, setSearching] = useState(true)
 
   useEffect(() => {
     api.getCategoriesWithVideos()
