@@ -9,18 +9,6 @@ import videosApi from '../../repositiories/videos'
 import MessageModal from '../../components/Modals/MessageModal'
 import PromptModal from '../../components/Modals/PromptModal'
 
-function getYouTubeId(youtubeURL) {
-    return youtubeURL.replace(
-        /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/,
-        "$7"
-    );
-}
-
-function getYoutubeImage(youtubeURL) {
-    return `https://img.youtube.com/vi/${getYouTubeId(youtubeURL)}/hqdefault.jpg`;
-}
-
-
 function ManageVideos() {
     const { categoryId } = useParams()
     const [category, setCategory] = useState({})
@@ -53,8 +41,8 @@ function ManageVideos() {
                 setVideos(videos.filter(video => video.id !== videoToRemove.id))
                 setMessage('Video deletado com sucesso')
             })
-            .catch(() => {
-                setMessage('Houve um erro. Tente novamente')
+            .catch(err => {
+                setMessage(err.message)
             })
             .finally(() => {
                 setVideoToRemove(null)
@@ -92,7 +80,7 @@ function ManageVideos() {
                 <VideoList>
                     {videos.map(video => (
                         <VideoElement key={video.id} color={category.color}>
-                            <VideoElement.Image color={category.color} url={getYoutubeImage(video.url)}>
+                            <VideoElement.Image color={category.color} url={video.youtube_image}>
                             </VideoElement.Image>
                             <VideoElement.Info>
                                 <VideoElement.Info.Title>{video.title}</VideoElement.Info.Title>

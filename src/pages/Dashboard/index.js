@@ -13,10 +13,14 @@ function Dashboard() {
     const [categories, setCategories] = useState([]);
     const [message, setMessage] = useState('')
     const [removingCategory, setRemovingCategory] = useState(null)
+    const [searching, setSearching] = useState(true)
 
     useEffect(() => {
         categoriesApi.getCategories()
-            .then(data => setCategories([...data]));
+            .then(data => {
+                setCategories([...data])
+                setSearching(false)
+            });
     }, []);
 
     function handleRemove() {
@@ -26,14 +30,14 @@ function Dashboard() {
                 setMessage('Vídeo removido com sucesso!')
             })
             .catch((err) => {
-                setMessage('Houve um erro! Tente novamente')
+                setMessage(err.message)
             })
             .finally(() => {
                 setRemovingCategory(null)
             })
     }
 
-    if (!categories.length) {
+    if (!categories.length && searching) {
         return <TemplatePage><Loader /></TemplatePage>
     }
 
@@ -49,7 +53,9 @@ function Dashboard() {
             )}
             <DashboardWrapper>
                 <h1>Dashboard</h1>
-                <CategoriesTable categories={categories} handleRemove={setRemovingCategory} />
+                {categories.length ? (
+                    <CategoriesTable categories={categories} handleRemove={setRemovingCategory} />
+                ) : <p style={{ alignSelf: 'center', marginBottom: 15 }}> Não há categorias cadastradas </p>}
                 <ButtonContainer>
                     <PrimaryButton
                         as={Link}
@@ -58,13 +64,15 @@ function Dashboard() {
                     >
                         Nova categoria
                     </PrimaryButton>
-                    <PrimaryButton
-                        as={Link}
-                        to='/cadastro/video'
-                        style={{ textDecoration: 'none' }}
-                    >
-                        Novo vídeo
-                    </PrimaryButton>
+                    {categories.length ? (
+                        <PrimaryButton
+                            as={Link}
+                            to='/cadastro/video'
+                            style={{ textDecoration: 'none' }}
+                        >
+                            Novo vídeo
+                        </PrimaryButton>
+                    ) : null}
                 </ButtonContainer>
             </DashboardWrapper>
         </TemplatePage>
