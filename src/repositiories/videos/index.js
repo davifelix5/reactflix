@@ -53,7 +53,7 @@ export default {
         const headers = getHeaders()
         const data = await fetch(url, { method, body: JSON.stringify(body), headers }).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro')
+            throw new Error(treatError(res.status))
         })
         return data
     }

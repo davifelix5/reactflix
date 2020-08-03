@@ -7,6 +7,7 @@ import useForm from '../../hooks/form'
 import Form from '../../components/Form'
 import InputField from '../../components/FormFields/InputField'
 import PrimaryButton from '../../components/PrimaryButton'
+import Loader from '../../components/Loader'
 
 function Login() {
     const userData = {
@@ -17,10 +18,11 @@ function Login() {
     const {
         handleChange,
         values: user,
-        clearForm
     } = useForm(userData)
 
     const history = useHistory()
+
+    const [submiting, setSubmiting] = useState(false)
 
     const [message, setMessage] = useState('')
     const [error, setError] = useState(false)
@@ -32,16 +34,19 @@ function Login() {
 
     function handleSubmit(event) {
         event.preventDefault()
+        setSubmiting(true)
         const { username, password, password2 } = user
         auth.login(username, password, password2)
             .then(() => {
                 setError(false)
                 setMessage('Login efetuado com sucesso')
-                clearForm()
             })
             .catch(err => {
                 setError(true)
                 setMessage(err.message)
+            })
+            .finally(() => {
+                setSubmiting(false)
             })
     }
 
@@ -49,25 +54,29 @@ function Login() {
         <TemplatePage>
             {message && <MessageModal message={message} disable={handleDisable} />}
             <h1>Fazer Login</h1>
-            <Form onSubmit={handleSubmit}>
-                <InputField
-                    type="text"
-                    name="username"
-                    label="Usuário"
-                    value={user.username}
-                    onChange={handleChange}
-                    required
-                />
-                <InputField
-                    type="password"
-                    label="Senha"
-                    name="password"
-                    value={user.password}
-                    onChange={handleChange}
-                    required
-                />
-                <PrimaryButton type="submit">Login</PrimaryButton>
-            </Form>
+            {submiting ? (
+                <Loader />
+            ) : (
+                    <Form onSubmit={handleSubmit}>
+                        <InputField
+                            type="text"
+                            name="username"
+                            label="Usuário"
+                            value={user.username}
+                            onChange={handleChange}
+                            required
+                        />
+                        <InputField
+                            type="password"
+                            label="Senha"
+                            name="password"
+                            value={user.password}
+                            onChange={handleChange}
+                            required
+                        />
+                        <PrimaryButton type="submit">Login</PrimaryButton>
+                    </Form>
+                )}
         </TemplatePage>
     )
 }

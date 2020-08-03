@@ -13,11 +13,14 @@ function ManageVideos() {
     const { categoryId } = useParams()
     const [category, setCategory] = useState({})
     const [videos, setVideos] = useState([])
+
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
+    const [allVideosRemoved, setAllVideosRemoved] = useState(false)
+    const [deleting, setDeleting] = useState(false)
+
     const [message, setMessage] = useState('')
     const [videoToRemove, setVideoToRemove] = useState(null)
-    const [allVideosRemoved, setAllVideosRemoved] = useState(false)
 
     useEffect(() => {
         categoriesApi.getCategory(categoryId)
@@ -36,6 +39,7 @@ function ManageVideos() {
     }, [categoryId])
 
     function handleDelete() {
+        setDeleting(true)
         videosApi.deleteVideo(videoToRemove.id)
             .then(() => {
                 setVideos(videos.filter(video => video.id !== videoToRemove.id))
@@ -46,6 +50,7 @@ function ManageVideos() {
             })
             .finally(() => {
                 setVideoToRemove(null)
+                setDeleting(false)
             })
         if (videos.length === 1) setAllVideosRemoved(true)
     }
@@ -69,7 +74,7 @@ function ManageVideos() {
         <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
             <h1>Vídeo da categoria {category.name}</h1>
             {message && <MessageModal message={message} disable={() => setMessage('')} />}
-            {videoToRemove && (
+            {videoToRemove && !deleting && (
                 <PromptModal
                     message={`Tem certeza que deseja remover o vídeo "${videoToRemove.title}"?`}
                     accept={handleDelete}
