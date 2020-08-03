@@ -9,27 +9,18 @@ import videosApi from '../../repositiories/videos'
 import MessageModal from '../../components/Modals/MessageModal'
 import PromptModal from '../../components/Modals/PromptModal'
 
-function getYouTubeId(youtubeURL) {
-    return youtubeURL.replace(
-        /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/,
-        "$7"
-    );
-}
-
-function getYoutubeImage(youtubeURL) {
-    return `https://img.youtube.com/vi/${getYouTubeId(youtubeURL)}/hqdefault.jpg`;
-}
-
-
 function ManageVideos() {
     const { categoryId } = useParams()
     const [category, setCategory] = useState({})
     const [videos, setVideos] = useState([])
+
     const [videosNotFound, setVideosNotFound] = useState(false)
     const [categoryNotFound, setCategoryNotFound] = useState(false)
+    const [allVideosRemoved, setAllVideosRemoved] = useState(false)
+    const [deleting, setDeleting] = useState(false)
+
     const [message, setMessage] = useState('')
     const [videoToRemove, setVideoToRemove] = useState(null)
-    const [allVideosRemoved, setAllVideosRemoved] = useState(false)
 
     useEffect(() => {
         categoriesApi.getCategory(categoryId)
@@ -48,16 +39,18 @@ function ManageVideos() {
     }, [categoryId])
 
     function handleDelete() {
+        setDeleting(true)
         videosApi.deleteVideo(videoToRemove.id)
             .then(() => {
                 setVideos(videos.filter(video => video.id !== videoToRemove.id))
                 setMessage('Video deletado com sucesso')
             })
-            .catch(() => {
-                setMessage('Houve um erro. Tente novamente')
+            .catch(err => {
+                setMessage(err.message)
             })
             .finally(() => {
                 setVideoToRemove(null)
+                setDeleting(false)
             })
         if (videos.length === 1) setAllVideosRemoved(true)
     }
@@ -81,7 +74,7 @@ function ManageVideos() {
         <TemplatePage buttonText="Gerenciar vídeos" buttonPath="/dashboard">
             <h1>Vídeo da categoria {category.name}</h1>
             {message && <MessageModal message={message} disable={() => setMessage('')} />}
-            {videoToRemove && (
+            {videoToRemove && !deleting && (
                 <PromptModal
                     message={`Tem certeza que deseja remover o vídeo "${videoToRemove.title}"?`}
                     accept={handleDelete}
@@ -92,7 +85,7 @@ function ManageVideos() {
                 <VideoList>
                     {videos.map(video => (
                         <VideoElement key={video.id} color={category.color}>
-                            <VideoElement.Image color={category.color} url={getYoutubeImage(video.url)}>
+                            <VideoElement.Image color={category.color} url={video.youtube_image}>
                             </VideoElement.Image>
                             <VideoElement.Info>
                                 <VideoElement.Info.Title>{video.title}</VideoElement.Info.Title>

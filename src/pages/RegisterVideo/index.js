@@ -14,29 +14,44 @@ import useForm from '../../hooks/form'
 import MessageModal from '../../components/Modals/MessageModal'
 
 function RegisterVideo() {
+  const [categoryOptions, setCategoryOptions] = useState([])
   const defaultVideo = {
     title: "",
     url: "",
     description: "",
-    categoryId: 1
+    category: 1
   };
-  const [categoryOptions, setCategoryOptions] = useState([])
-  const [editing, setEditing] = useState(false)
-  const [submiting, setSubmiting] = useState(false)
-  const [message, setMessage] = useState('')
-  const [destination, setDestination] = useState('')
   const {
     values: video,
     setValues: setVideo,
     handleChange: changeVideo,
   } = useForm(defaultVideo)
+
   const { videoId } = useParams()
   const history = useHistory()
 
+  const [editing, setEditing] = useState(false)
+  const [submiting, setSubmiting] = useState(false)
+  const [error, setError] = useState(false)
+
+  const [message, setMessage] = useState('')
+  const [destination, setDestination] = useState('')
+
   useEffect(() => {
     categoriesApi.getCategories()
-      .then(data => setCategoryOptions([...data]))
-  }, [])
+      .then(data => {
+        const [firstCategory] = data
+        setCategoryOptions([...data])
+        setVideo(video => {
+          return { ...video, category: firstCategory.id }
+        })
+      })
+  }, [setVideo])
+
+  function handleDisable() {
+    setMessage('')
+    if (!error) history.push(destination)
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -44,15 +59,18 @@ function RegisterVideo() {
     setSubmiting(true)
     const operation = editing ? videosApi.editVideo : videosApi.registerVideo
     const result = editing ? 'editado' : 'cadastrado'
-    setDestination(editing ? `/category/${video.categoryId}` : '/')
-    operation({ ...video, categoryId: Number(video.categoryId) })
+    setDestination(editing ? `/category/${video.category}` : '/')
+    operation({ ...video, category: Number(video.category) })
       .then(() => {
         setMessage(`Video ${result} com sucessso`)
-        setSubmiting(false)
+        setError(false)
         setEditing(false)
       })
-      .catch(() => {
-        setMessage(`Video ${result} com sucessso`)
+      .catch((err) => {
+        setMessage(err.message)
+        setError(true)
+      })
+      .finally(() => {
         setSubmiting(false)
       })
   }
@@ -70,7 +88,6 @@ function RegisterVideo() {
       })
   }, [videoId, handleEdit])
 
-
   if (!categoryOptions.length || (editing && !video)) {
     return (
       <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
@@ -84,7 +101,7 @@ function RegisterVideo() {
     <TemplatePage buttonPath="/cadastro/categoria" buttonText="Nova Categoria">
 
       <h1>{editing ? "Alterar vídeo" : "Novo vídeo"}</h1>
-      {message && <MessageModal message={message} disable={() => history.push(destination)} />}
+      {message && <MessageModal message={message} disable={handleDisable} />}
       {submiting ? (
         <Loader />
       ) : (
@@ -117,10 +134,10 @@ function RegisterVideo() {
             />
             <Select
               label="Categoria"
-              name="categoryId"
+              name="category"
               onChange={changeVideo}
               options={categoryOptions}
-              value={video.categoryId}
+              value={video.category}
             />
             <ButtonContainer>
               {editing && <SecondaryButton onClick={() => history.push(`/category/${video.categoryId}`)}>Cancelar</SecondaryButton>}

@@ -1,5 +1,6 @@
 import config from '../../config'
 import { setAuthCookie } from '../../auth/cookies'
+import { treatError } from '../api'
 
 const { BASE_URL } = config
 const authUrl = `${BASE_URL}auth`
@@ -10,14 +11,17 @@ export default {
         const method = 'POST'
         const headers = { 'Content-Type': 'application/json' }
         const body = { username, password }
-        fetch(url, { method, headers, body: JSON.stringify(body) })
-            .then(res => {
-                if (res.ok) return res.json()
-                throw new Error('Houve um erro')
-            })
-            .then(data => {
-                const { access, refresh } = data
-                setAuthCookie(access, refresh)
+        return fetch(url, { method, headers, body: JSON.stringify(body) })
+            .then(async res => {
+                if (res.ok) {
+                    const data = await res.json()
+                    const { access, refresh } = data
+                    setAuthCookie(access, refresh)
+                    return
+                } else if (res.status === 401) {
+                    throw new Error('Credenciais inválidas')
+                }
+                throw new Error('Houve um erro. Tente novamente mais tarde')
             })
     },
 
@@ -26,14 +30,17 @@ export default {
         const method = 'POST'
         const headers = { 'Content-Type': 'application/json' }
         const body = { username, password, password2 }
-        fetch(url, { method, headers, body: JSON.stringify(body) })
-            .then(res => {
-                if (res.ok) return res.json()
-                throw new Error('Houve um erro')
-            })
-            .then(data => {
-                const { access, refresh } = data
-                setAuthCookie(access, refresh)
+        return fetch(url, { method, headers, body: JSON.stringify(body) })
+            .then(async res => {
+                if (res.ok) {
+                    const data = await res.json()
+                    const { access, refresh } = data
+                    setAuthCookie(access, refresh)
+                    return
+                } else if (res.status === 401) {
+                    throw new Error('Credenciais inválidas')
+                }
+                throw new Error('Houve um erro. Tente novamente mais tarde')
             })
     },
 
@@ -42,14 +49,15 @@ export default {
         const method = 'POST'
         const headers = { 'Content-Type': 'application/json' }
         const body = { refresh }
-        fetch(url, { method, headers, body })
-            .then(res => {
-                if (res.ok) return res.json()
-                throw new Error('Houve um erro')
-            })
-            .then(data => {
-                const { access } = data
-                setAuthCookie(access, refresh)
+        return fetch(url, { method, headers, body })
+            .then(async res => {
+                if (res.ok) {
+                    const data = await res.json()
+                    const { access } = data
+                    setAuthCookie(access, refresh)
+                    return
+                }
+                throw new Error(treatError(res.status))
             })
     }
 }

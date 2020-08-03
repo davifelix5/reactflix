@@ -10,6 +10,9 @@ function VideoCardGroup({ ignoreFirstVideo, category, setPlayVideo }) {
   const categoryColor = category.color;
   const categoryExtraLink = category.extraLink;
   const videos = category.videos;
+  if (ignoreFirstVideo && videos.length === 1) {
+    return null
+  }
   return (
     <VideoCardGroupContainer>
       {categoryTitle && (
@@ -36,6 +39,7 @@ function VideoCardGroup({ ignoreFirstVideo, category, setPlayVideo }) {
                 <VideoCard
                   videoTitle={video.title}
                   videoURL={video.url}
+                  videoImage={video.youtube_image}
                   videoDescription={video.description}
                   categoryColor={categoryColor}
                   setPlayVideo={setPlayVideo}

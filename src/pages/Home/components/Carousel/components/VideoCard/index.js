@@ -8,12 +8,8 @@ function getYouTubeId(youtubeURL) {
   );
 }
 
-function getYoutubeImage(youtubeURL) {
-  return `https://img.youtube.com/vi/${getYouTubeId(youtubeURL)}/hqdefault.jpg`;
-}
-
-function VideoCard({ videoTitle, videoDescription, videoURL, categoryColor, setPlayVideo }) {
-  const image = getYoutubeImage(videoURL)
+function VideoCard({ videoTitle, videoDescription, videoURL, videoImage, categoryColor, setPlayVideo }) {
+  const image = videoImage
   const [hoverInterval, setHoverInterval] = useState(null);
   return (
     <VideoCardContainer

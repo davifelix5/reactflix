@@ -17,25 +17,33 @@ function RegisterCategory() {
     description: "",
     color: "#aadd00"
   };
-
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [action, setAction] = useState("Cadastrar");
-  const [submiting, setSubmiting] = useState(false)
-  const [destination, setDestination] = useState('')
-  const [message, setMessage] = useState('')
   const {
     values: category,
     setValues: setCategory,
     handleChange: changeCategory,
   } = useForm(defaultCateogory)
+
   const { categoryId } = useParams()
   const history = useHistory()
+
+  const [action, setAction] = useState("Cadastrar");
+  const [submiting, setSubmiting] = useState(false)
+  const [error, setError] = useState(false)
+
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [destination, setDestination] = useState('')
+
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (editingCategory) setAction("Editar");
     else setAction("Cadastrar");
   }, [editingCategory, setAction]);
 
+  function handleDisable() {
+    setMessage('')
+    if (!error) history.push(destination)
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -46,11 +54,14 @@ function RegisterCategory() {
     setDestination(editingCategory ? "/dashboard" : "/")
     operation({ ...category })
       .then(() => {
+        setError(false)
         setMessage(`Categoria ${result} com sucesso!`)
-        setSubmiting(false)
       })
-      .catch(() => {
-        setMessage('Ocorreu um erro. Tente novamente')
+      .catch((err) => {
+        setError(true)
+        setMessage(err.message)
+      })
+      .finally(() => {
         setSubmiting(false)
       })
   }
@@ -76,7 +87,7 @@ function RegisterCategory() {
   return (
     <TemplatePage>
       <h1>Cadastro de categoria</h1>
-      {message && <MessageModal message={message} disable={() => history.push(destination)} />}
+      {message && <MessageModal message={message} disable={handleDisable} />}
       {submiting ? (
         <Loader />
       ) : (

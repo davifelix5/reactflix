@@ -1,4 +1,5 @@
 import config from '../../config'
+import getHeaders, { treatError } from '../api/'
 
 const { BASE_URL } = config
 
@@ -10,7 +11,7 @@ export default {
         const url = categoriesUrl;
         const data = await fetch(url).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro')
+            throw new Error(treatError(res.status))
         })
         return data
     },
@@ -19,7 +20,7 @@ export default {
         const url = categoriesUrl + id + '/'
         const data = await fetch(url).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro!')
+            throw new Error(treatError(res.status))
         })
         return data
     },
@@ -28,7 +29,7 @@ export default {
         const url = categoriesUrl + 'videos/';
         const data = await fetch(url).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro!')
+            throw new Error(treatError(res.status))
         })
         return data
     },
@@ -36,9 +37,9 @@ export default {
     async deleteCategory(id) {
         const url = categoriesUrl + `${id}/`
         const method = 'DELETE'
-        const data = await fetch(url, { method }).then(res => {
-            if (res.ok) return res.json()
-            throw new Error('Houve um erro')
+        const headers = getHeaders()
+        const data = await fetch(url, { method, headers }).then(res => {
+            if (!res.ok) throw new Error(treatError(res.status))
         })
         return data
     },
@@ -46,11 +47,11 @@ export default {
     async editCategory(body) {
         const { id } = body
         const url = categoriesUrl + `${id}/`
-        const headers = { "Content-Type": "application/json" }
+        const headers = getHeaders()
         const method = 'PUT'
         const data = await fetch(url, { method, body: JSON.stringify(body), headers }).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro')
+            throw new Error(treatError(res.status))
         })
         return data
     },
@@ -58,10 +59,10 @@ export default {
     async registerCategory(body) {
         const url = categoriesUrl
         const method = 'POST'
-        const headers = { "Content-Type": "application/json" }
+        const headers = getHeaders()
         const data = await fetch(url, { method, body: JSON.stringify(body), headers }).then(res => {
             if (res.ok) return res.json()
-            throw new Error('Houve um erro')
+            throw new Error(treatError(res.status))
         })
         return data
     }
