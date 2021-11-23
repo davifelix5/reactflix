@@ -19,9 +19,8 @@ export const SelectField = styled.div`
     font-size: 1.2em;
     background: none;
     border: none;
-  }
-  select:focus ~ label {
-    opacity: 1;
+    color: #ffffffa9;
+    opacity: 0.65;
   }
   select:focus {
     border: none;

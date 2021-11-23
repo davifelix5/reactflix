@@ -16,6 +16,7 @@ export const InputWrapper = styled.div`
     border-radius: 4px;
     font-size: 1em;
     height: 100%;
+    padding: 0 10px;
     padding-top: 20px;
     color: var(--white);
   }
@@ -43,9 +44,6 @@ export const InputWrapper = styled.div`
     top: 3px;
     left: 5px;
     font-size: 0.8em;
-  }
-  input[type="color"] {
-    padding-top: 15px;
   }
   input[type="color"] + label {
     top: 3px;
